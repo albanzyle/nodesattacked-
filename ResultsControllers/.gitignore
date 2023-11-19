@@ -1,0 +1,7 @@
+*.xlsx
+*.csv
+*.pyc
+*.docx
+venv/
+__pycache__/
+ResultsControllers/
