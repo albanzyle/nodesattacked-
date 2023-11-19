@@ -385,7 +385,7 @@ def twoNodesAttacked():
     ##print(adj_matrixOriginal)
 
     #controller_nodes=[4,75]
-    controller_nodes=  [1,1,1,1,1,1,1]
+    controller_nodes=  [1,1,1,1,1]
     '''# Add 5 random controllers to the graph
     num_controllers = 5
     controller_nodes = random.sample(list(G.nodes), num_controllers)
@@ -790,7 +790,7 @@ def twoNodesAttacked():
         1 : {17, 19, 20, 22, 24, 33, 42, 63}}
     
     for i in range(1, 101):
-        random_size = 10 #random.randint(3,7)       
+        random_size = 8 #random.randint(3,7)       
         random_nodes = set(random.sample(range(1, len(sa_nodes)), random_size))  # Replace range(1, 100) with your desired range of nodes
         if i <25:
             sa_attack_nodes[i] = random_nodes
@@ -1047,87 +1047,87 @@ def twoNodesAttacked():
     # result = solve_proportional_robust_controller_placement_integral(N, sum_matrix_path, K, 2, M)
 
 
-    for i, nodes in sa_attack_nodes_500_random.items():
-        random_size = 10
-        random_nodes = set(random.sample(set(sa_nodes) - set(controllers), random_size - 2))
-        random_nodes.update(set(random.sample(controllers, 2)))
-        sa_attack_nodes_500_random[i] = random_nodes
-        G1 = G.copy()
-        # Remove the edges connected to the attacked nodes
-        for node in nodes:
-            if G1.has_node(node):
-                edges = list(G1.edges(node))  # Get the edges connected to the node
-                G1.remove_edges_from(edges)  # Remove the edges
-                ##G1.remove_node(node)
+    # for i, nodes in sa_attack_nodes_500_random.items():
+    #     random_size = 10
+    #     random_nodes = set(random.sample(set(sa_nodes) - set(controllers), random_size - 2))
+    #     random_nodes.update(set(random.sample(controllers, 2)))
+    #     sa_attack_nodes_500_random[i] = random_nodes
+    #     G1 = G.copy()
+    #     # Remove the edges connected to the attacked nodes
+    #     for node in nodes:
+    #         if G1.has_node(node):
+    #             edges = list(G1.edges(node))  # Get the edges connected to the node
+    #             G1.remove_edges_from(edges)  # Remove the edges
+    #             ##G1.remove_node(node)
 
-        # Draw the new graph
-        print(f"Attacking nodes: {nodes}")
-        print(f"New graph after attack {i}")
-
-
-        pos = {node: (attrs['sa_node_x'], attrs['sa_node_y']) for node, attrs in sa_nodes.items()}
-        labels = {node: attrs['sa_node_label'] for node, attrs in sa_nodes.items()}
-        fig = plt.figure(figsize=(10, 7))
-        plt.suptitle(f"New graph after attack {i}")
-        nx.draw(G1, pos, with_labels=True, labels=labels)
-        # plt.show()
-        # get the adjacency matrix
-        adj_matrix = nx.adjacency_matrix(G1).todense()
-        print(np.shape(adj_matrix))
-        adj_matrix1 = nx.adjacency_matrix(G1)
-        adj=adj_matrix
-        print(f"-----------------------------------------------------------------------------------------")
-        # Initialize an adjacency matrix with zeros
-        path_matrix = np.zeros((len(sa_nodes), len(sa_nodes)))
-        path_matrix_controller = np.zeros((len(sa_nodes), len(sa_nodes)))
-
-        # Loop over all nodes as source and target
-        for source in G1.nodes:
-            if source in nodes:
-               continue  # Skip calculations for attacked nodes
-            for target in G1.nodes:
-                if target in nodes:
-                    continue  # Skip calculations for attacked nodes
-                # Skip if the source and target are the same
-                if source == target:
-                    path_matrix[source-1, target-1] = 1
-                # Check if a path exists between the source and target
-                if nx.has_path(G1, source, target):
-                    # Calculate the shortest path length
-                    path_length = nx.dijkstra_path_length(G1, source, target)
-                    # If the path length is 10 or less, mark with a 1 in the matrix
-                    if path_length <= 1000000:
-                        path_matrix[source-1, target-1] = 1
-                # Check connected components
-                # Now path_matrix has 1 where there is a path of length 10 or less, and 0 otherwise
-        #print(path_matrix)
-        path_matrixes.append(path_matrix)
-        # plt.show()
-        min_count1 = float('inf')
-        count = 0
-        for no in range(len(sa_nodes)):
-            for xo in range(len(controllers)):
-                ##print('kordinata',no,controller_nodes[xo]-1)
-                ##print('vlera ne matrice',path_matrix[no, controller_nodes[xo]-1])
-                if path_matrix[no, controllers[xo]-1] ==1:
-                    count = count+1
-                    #print(path_matrix[no, controller_nodes[2]])
-                    #print('count aktual',count)
-                    break
-        avarage_connections.append(count)
-        print(f'Number of connected nodes after attack {i}:',count)
-
-        min_count1 = min(avarage_connections) 
+    #     # Draw the new graph
+    #     print(f"Attacking nodes: {nodes}")
+    #     print(f"New graph after attack {i}")
 
 
+    #     pos = {node: (attrs['sa_node_x'], attrs['sa_node_y']) for node, attrs in sa_nodes.items()}
+    #     labels = {node: attrs['sa_node_label'] for node, attrs in sa_nodes.items()}
+    #     fig = plt.figure(figsize=(10, 7))
+    #     plt.suptitle(f"New graph after attack {i}")
+    #     nx.draw(G1, pos, with_labels=True, labels=labels)
+    #     # plt.show()
+    #     # get the adjacency matrix
+    #     adj_matrix = nx.adjacency_matrix(G1).todense()
+    #     print(np.shape(adj_matrix))
+    #     adj_matrix1 = nx.adjacency_matrix(G1)
+    #     adj=adj_matrix
+    #     print(f"-----------------------------------------------------------------------------------------")
+    #     # Initialize an adjacency matrix with zeros
+    #     path_matrix = np.zeros((len(sa_nodes), len(sa_nodes)))
+    #     path_matrix_controller = np.zeros((len(sa_nodes), len(sa_nodes)))
 
-    print('Avarage conectiones vector:',avarage_connections)
-    total = sum(avarage_connections)
-    # print('totaliii',total)
-    # print('gjatesiaaaaaa',len(avarage_connections))
-    total=total/len(avarage_connections)
-    total_12 = sum(avarage_connections[:12])
-    total_12 = total_12 / 12
+    #     # Loop over all nodes as source and target
+    #     for source in G1.nodes:
+    #         if source in nodes:
+    #            continue  # Skip calculations for attacked nodes
+    #         for target in G1.nodes:
+    #             if target in nodes:
+    #                 continue  # Skip calculations for attacked nodes
+    #             # Skip if the source and target are the same
+    #             if source == target:
+    #                 path_matrix[source-1, target-1] = 1
+    #             # Check if a path exists between the source and target
+    #             if nx.has_path(G1, source, target):
+    #                 # Calculate the shortest path length
+    #                 path_length = nx.dijkstra_path_length(G1, source, target)
+    #                 # If the path length is 10 or less, mark with a 1 in the matrix
+    #                 if path_length <= 1000000:
+    #                     path_matrix[source-1, target-1] = 1
+    #             # Check connected components
+    #             # Now path_matrix has 1 where there is a path of length 10 or less, and 0 otherwise
+    #     #print(path_matrix)
+    #     path_matrixes.append(path_matrix)
+    #     # plt.show()
+    #     min_count1 = float('inf')
+    #     count = 0
+    #     for no in range(len(sa_nodes)):
+    #         for xo in range(len(controllers)):
+    #             ##print('kordinata',no,controller_nodes[xo]-1)
+    #             ##print('vlera ne matrice',path_matrix[no, controller_nodes[xo]-1])
+    #             if path_matrix[no, controllers[xo]-1] ==1:
+    #                 count = count+1
+    #                 #print(path_matrix[no, controller_nodes[2]])
+    #                 #print('count aktual',count)
+    #                 break
+    #     avarage_connections.append(count)
+    #     print(f'Number of connected nodes after attack {i}:',count)
+
+    #     min_count1 = min(avarage_connections) 
+
+
+
+    # print('Avarage conectiones vector:',avarage_connections)
+    # total = sum(avarage_connections)
+    # # print('totaliii',total)
+    # # print('gjatesiaaaaaa',len(avarage_connections))
+    # total=total/len(avarage_connections)
+    # total_12 = sum(avarage_connections[:12])
+    # total_12 = total_12 / 12
     print('Proportional Fairness Sorted Values:')
     for i, row_sum in zip(sorted_indices, sorted_sums):
         print(f"Node Index {i+1}: Node Sum = {row_sum}")
@@ -1147,11 +1147,29 @@ def twoNodesAttacked():
         controllers2.append(indexes[i])
     print(controllers2)
     avarage_connections = []
+    avarage_connections1 = []
+    
+    
+    common_nodes = list(set(controllers) & set(controllers2))
+    print("common_nodes:", common_nodes)
+
+    available_nodes = list(set(sa_nodes) - set(controllers) - set(controllers2))
+    print("available_nodes:", available_nodes)
+    all_sample_from_common = {}  # Dictionary to store all combinations
+    
     for i, nodes in sa_attack_nodes_500_random.items():
-        random_size = 10
-        random_nodes = set(random.sample(set(sa_nodes) - set(controllers2), random_size - 2))
-        random_nodes.update(set(random.sample(controllers2, 2)))
+        random_size = 8
+        random_nodes = set(random.sample(available_nodes, random_size - 2))
+        # Sample two nodes from common_nodes
+        sample_from_common = random.sample(common_nodes, 2)
+        # Store the sample_from_common in the dictionary
+        all_sample_from_common[i] = sample_from_common
+        # Add two nodes from the common_nodes list
+        random_nodes.update(sample_from_common)
+
         sa_attack_nodes_500_random[i] = random_nodes
+        
+    for i, nodes in sa_attack_nodes_500_random.items():  
         G1 = G.copy()
         # Remove the edges connected to the attacked nodes
         for node in nodes:
@@ -1161,7 +1179,7 @@ def twoNodesAttacked():
                 ##G1.remove_node(node)
 
         # Draw the new graph
-        print(f"Attacking nodes: {nodes}")
+        print(f"Attacking nodes: {nodes} - Sample from common nodes: {all_sample_from_common[i]}")
         print(f"New graph after attack {i}")
 
 
@@ -1203,6 +1221,8 @@ def twoNodesAttacked():
         #print(path_matrix)
         path_matrixes.append(path_matrix)
         # plt.show()
+        min_count1 = float('inf')
+        count1 = 0
         # Initialize the minimum count with a large value
         min_count = float('inf')
         count = 0
@@ -1215,11 +1235,40 @@ def twoNodesAttacked():
                     #print(path_matrix[no, controller_nodes[2]])
                     #print('count aktual',count)
                     break
+            for xo in range(len(controllers)):
+                ##print('kordinata',no,controller_nodes[xo]-1)
+                ##print('vlera ne matrice',path_matrix[no, controller_nodes[xo]-1])
+                if path_matrix[no, controllers[xo]-1] ==1:
+                    count1 = count1+1
+                    #print(path_matrix[no, controller_nodes[2]])
+                    #print('count aktual',count)
+                    break
+        # print(avarage_connections)
+        # print(avarage_connections1)
         avarage_connections.append(count)
-        print(f'Number of connected nodes after attack {i}:',count)
+        avarage_connections1.append(count1)
+        
+        print(f'Number of connected nodes after attack {i} PF:',count)
+        print(f'Number of connected nodes after attack {i} LF:',count1)
+        
 
         min_count = min(avarage_connections )
+        min_count1 = min(avarage_connections1 )
+        
+    # print('Avarage conectiones vector:',avarage_connections1)
+    # print('Avarage conectiones vector:',avarage_connections)
+    df = pd.DataFrame(sa_attack_nodes_500_random.items(), columns=['Attack', 'Nodes'])
 
+    # Save the DataFrame to an Excel file
+    excel_filename = 'sa_attack_nodes1.csv'
+    df.to_csv(excel_filename, index=False)
+
+    print(f"Data has been saved to {excel_filename}")
+    total = sum(avarage_connections1)
+    total=total/len(avarage_connections1)
+    total_12 = sum(avarage_connections1[:12])
+    total_12 = total_12 / 12
+    print('Common Controllers',common_nodes)
     # Print the lowest value of count
     print('Lowest value of count LF:', min_count1)
     print('Lowest value of count PF:',min_count )
